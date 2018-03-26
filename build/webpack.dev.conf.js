@@ -13,6 +13,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
+const { SkeletonPlugin } = require('page-skeleton-webpack-plugin')
 
 const portfinder = require('portfinder')
 
@@ -28,6 +29,50 @@ function getDLLFileName() {
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
+
+function customPath () {
+  return path.join(__dirname, 'shell.html')
+}
+const pluginDefaultConfig = {
+  text: {
+    color: '#EEEEEE'
+  },
+  image: {
+    shape: 'rect', // `rect` | `circle`
+    color: '#EFEFEF',
+    shapeOpposite: []
+  },
+  button: {
+    color: '#EFEFEF',
+    excludes: [] 
+  },
+  svg: {
+    color: '#EFEFEF',
+    shape: 'circle', // circle | rect
+    shapeOpposite: []
+  },
+  pseudo: {
+    color: '#EFEFEF', // or transparent
+    shape: 'circle' // circle | rect
+  },
+  device: 'iPhone 6 Plus',
+  debug: false,
+  minify: {
+    minifyCSS: { level: 2 },
+    removeComments: true,
+    removeAttributeQuotes: true,
+    removeEmptyAttributes: false
+  },
+  defer: 5000,
+  excludes: [],
+  remove: [],
+  hide: [],
+  grayBlock: [],
+  cookies: [],
+  headless: true,
+  h5Only: false
+}
+
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: Object.assign(utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true },
@@ -102,6 +147,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           }
       }]
     }),
+    new SkeletonPlugin({
+      pathname: path.resolve(__dirname, `${customPath}`) // 生成名为 shell 文件存放地址
+    }, pluginDefaultConfig ),
     // copy custom static assets
     new CopyWebpackPlugin([
       {
