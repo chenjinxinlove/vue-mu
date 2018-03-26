@@ -91,10 +91,10 @@ export default {
   },
   computed: {
     playIcon() {
-      return this.playing ? 'icon-pause': 'icon-play'
+      return this.playing ? 'icon-pause' : 'icon-play'
     },
     miniIcon() {
-      return this.playing ? 'icon-pause-mini': 'icon-play-mini'
+      return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
     },
     disableCls() {
       return this.songReady ? '' : 'disable'
@@ -210,14 +210,14 @@ export default {
     onProgressBarChange(percent) {
       this.$refs.audio.currentTime = this.currentSong.duration * percent
       if (!this.playing) {
-          this.togglePlaying()
-        }
+        this.togglePlaying()
+      }
     },
     _pad(num, n = 2) {
-      let len = num.toString().length;
+      let len = num.toString().length
       while (len < n) {
         num = '0' + num
-        len ++
+        len++
       }
       return num
     },

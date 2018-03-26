@@ -17,9 +17,18 @@ Vue.use(VueLazyLoad, {
 })
 
 /* eslint-disable no-new */
-new Vue({
-  el: '#app',
+let app = new Vue({
   router,
   store,
   render: h => h(App)
 })
+if (process.env.NODE_ENV === 'development') {
+  app.$mount('#app')
+} else {
+  window.mountApp = () => {
+    app.$mount('#app')
+  }
+  if (window.STYLE_READY) {
+    window.mountApp()
+  }
+}
