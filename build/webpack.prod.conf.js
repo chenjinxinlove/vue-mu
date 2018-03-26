@@ -12,17 +12,23 @@ const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const SkeletonWebpackPlugin = require('vue-skeleton-webpack-plugin')
 const OmmitCSSPlugin = require('./ommit-css-webpack-plugin')
-
+function resolve (dir) {
+  return path.join(__dirname, '..', dir)
+}
 const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
   : require('../config/prod.env')
 
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
-    rules: utils.styleLoaders({
+    rules: Object.assign(utils.styleLoaders({
       sourceMap: config.build.productionSourceMap,
       extract: true,
       usePostCSS: true
+    }),{
+      test: /\.js$/,
+      use: 'babel-loader',//指定loader
+      include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
     })
   },
   devtool: config.build.productionSourceMap ? config.build.devtool : false,

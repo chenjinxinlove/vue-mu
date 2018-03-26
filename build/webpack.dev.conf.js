@@ -1,21 +1,42 @@
 'use strict'
 const utils = require('./utils')
+const fs = require('fs')
+const _ = require('lodash')
 const webpack = require('webpack')
 const config = require('../config')
 const merge = require('webpack-merge')
 const path = require('path')
+const HappyPack = require('happypack')
+const happyThreadPool = HappyPack.ThreadPool({size: 6})
 const baseWebpackConfig = require('./webpack.base.conf')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
+
 const portfinder = require('portfinder')
 
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
+const {version} = require('./../package.json');
 
+function getDLLFileName() {
+    const fileNames = fs.readdirSync( path.resolve(__dirname, '../dist/dll/'));
+
+    return _.find(fileNames, fileName => fileName.endsWith(`${version}.js`));
+}
+function resolve (dir) {
+  return path.join(__dirname, '..', dir)
+}
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
-    rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
+    rules: Object.assign(utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true },
+      {
+        test: /\.js$/,
+        use: 'happypack/loader?id=js',//指定loader
+        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+      }
+    ))
   },
   // cheap-module-eval-source-map is faster for development
   devtool: config.dev.devtool,
@@ -48,14 +69,38 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.DefinePlugin({
       'process.env': require('../config/dev.env')
     }),
+    new webpack.optimize.ModuleConcatenationPlugin({}),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
     new webpack.NoEmitOnErrorsPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      // 在这里引入 manifest 文件
+      manifest: require('../dist/dll/vue.manifest.json')
+    }),
+    //把js插入到html文件中
+    new AddAssetHtmlPlugin({
+      filepath: require.resolve(`../dist/dll/${getDLLFileName()}`),
+      outputPath: 'dll',
+      includeSourcemap: false,
+      hash: true,
+      publicPath: '/dist/dll/'
+    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'index.html',
       inject: true
+    }),
+    new HappyPack({
+      id: 'js',
+      threadPool: happyThreadPool,
+      loaders: [{
+          path: 'babel-loader',
+          query: {
+              cacheDirectory: true
+          }
+      }]
     }),
     // copy custom static assets
     new CopyWebpackPlugin([
