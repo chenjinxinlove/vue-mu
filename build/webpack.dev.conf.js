@@ -22,7 +22,7 @@ const PORT = process.env.PORT && Number(process.env.PORT)
 const {version} = require('./../package.json');
 
 function getDLLFileName() {
-    const fileNames = fs.readdirSync( path.resolve(__dirname, '../dist/dll/'));
+    const fileNames = fs.readdirSync( path.resolve(__dirname, '../static/dll/'));
 
     return _.find(fileNames, fileName => fileName.endsWith(`${version}.js`));
 }
@@ -122,15 +122,15 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.DllReferencePlugin({
       context: __dirname,
       // 在这里引入 manifest 文件
-      manifest: require('../dist/dll/vue.manifest.json')
+      manifest: require('../static/dll/vue.manifest.json')
     }),
     //把js插入到html文件中
     new AddAssetHtmlPlugin({
-      filepath: require.resolve(`../dist/dll/${getDLLFileName()}`),
+      filepath: require.resolve(`../static/dll/${getDLLFileName()}`),
       outputPath: 'dll',
       includeSourcemap: false,
       hash: true,
-      publicPath: '/dist/dll/'
+      publicPath: '/static/dll/'
     }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
@@ -149,7 +149,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     }),
     new SkeletonPlugin({
       pathname: path.resolve(__dirname, `${customPath}`) // 生成名为 shell 文件存放地址
-    }, pluginDefaultConfig ),
+    }),
     // copy custom static assets
     new CopyWebpackPlugin([
       {
