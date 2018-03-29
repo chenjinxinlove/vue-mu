@@ -9,10 +9,7 @@ import store from './store'
 import VueLazyLoad from 'vue-lazyload'
 // import Skeleton from './base/skeleton/index'
 import './common/stylus/index.styl'
-import VvUI from 'vvui' // 引入组件库
-import '../node_modules/VVUI/packages/theme-default/lib/index.css' // 引入样式库
 
-Vue.use(VvUI)
 fastclick.attach(document.body)
 
 // Vue.use(Skeleton)

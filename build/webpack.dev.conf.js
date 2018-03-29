@@ -6,8 +6,6 @@ const webpack = require('webpack')
 const config = require('../config')
 const merge = require('webpack-merge')
 const path = require('path')
-const HappyPack = require('happypack')
-const happyThreadPool = HappyPack.ThreadPool({size: 6})
 const baseWebpackConfig = require('./webpack.base.conf')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -21,7 +19,7 @@ const PORT = process.env.PORT && Number(process.env.PORT)
 const {version} = require('./../package.json');
 
 function getDLLFileName() {
-    const fileNames = fs.readdirSync( path.resolve(__dirname, '../dist/dll/'));
+    const fileNames = fs.readdirSync( path.resolve(__dirname, '../static/dll/'));
 
     return _.find(fileNames, fileName => fileName.endsWith(`${version}.js`));
 }
@@ -30,13 +28,7 @@ function resolve (dir) {
 }
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
-    rules: Object.assign(utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true },
-      {
-        test: /\.js$/,
-        use: 'happypack/loader?id=js',//指定loader
-        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
-      }
-    ))
+    rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
   },
   // cheap-module-eval-source-map is faster for development
   devtool: config.dev.devtool,
@@ -69,7 +61,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.DefinePlugin({
       'process.env': require('../config/dev.env')
     }),
-    new webpack.optimize.ModuleConcatenationPlugin({}),
+    // new webpack.optimize.ModuleConcatenationPlugin({}),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
     new webpack.NoEmitOnErrorsPlugin(),
@@ -77,32 +69,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.DllReferencePlugin({
       context: __dirname,
       // 在这里引入 manifest 文件
-      manifest: require('../dist/dll/vue.manifest.json')
+      manifest: require('../static/dll/vue.manifest.json')
     }),
     //把js插入到html文件中
     new AddAssetHtmlPlugin({
-      filepath: require.resolve(`../dist/dll/${getDLLFileName()}`),
+      filepath: require.resolve(`../static/dll/${getDLLFileName()}`),
       outputPath: 'dll',
       includeSourcemap: false,
       hash: true,
-      publicPath: '/dist/dll/'
+      publicPath: '/static/dll/'
     }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'index.html',
       inject: true
     }),
-    new HappyPack({
-      id: 'js',
-      threadPool: happyThreadPool,
-      loaders: [{
-          path: 'babel-loader',
-          query: {
-              cacheDirectory: true
-          }
-      }]
-    }),
-    // copy custom static assets
     new CopyWebpackPlugin([
       {
         from: path.resolve(__dirname, '../static'),

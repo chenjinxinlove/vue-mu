@@ -21,14 +21,10 @@ const env = process.env.NODE_ENV === 'testing'
 
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
-    rules: Object.assign(utils.styleLoaders({
+    rules: utils.styleLoaders({
       sourceMap: config.build.productionSourceMap,
       extract: true,
       usePostCSS: true
-    }),{
-      test: /\.js$/,
-      use: 'babel-loader',//指定loader
-      include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
     })
   },
   devtool: config.build.productionSourceMap ? config.build.devtool : false,
