@@ -21,6 +21,17 @@ module.exports = {
           referer: 'https://c.y.qq.com/',
           host: 'c.y.qq.com'
         }
+      },
+      '/api/lyric': {
+        target: 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/lyric': ''
+        },
+        headers: {
+          referer: 'https://c.y.qq.com/',
+          host: 'c.y.qq.com'
+        }
       }
     },
 
