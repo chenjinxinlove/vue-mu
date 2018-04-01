@@ -32,6 +32,17 @@ module.exports = {
           referer: 'https://c.y.qq.com/',
           host: 'c.y.qq.com'
         }
+      },
+      '/api/getCdInfo': {
+        target: 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/getCdInfo': ''
+        },
+        headers: {
+          referer: 'https://c.y.qq.com/',
+          host: 'c.y.qq.com'
+        }
       }
     },
 
