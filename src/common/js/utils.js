@@ -1,4 +1,5 @@
-const shuffle = ([...arr]) => {
+
+export const shuffle = ([...arr]) => {
   let _arr = arr.slice()
   let m = _arr.length
   while (m) {
@@ -8,4 +9,14 @@ const shuffle = ([...arr]) => {
   return _arr
 }
 
-export default shuffle
+export function debounce(func, delay) {
+  let timer = ''
+  return function (...args) {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      func.apply(this, ...args)
+    }, delay)
+  }
+}

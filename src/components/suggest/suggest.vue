@@ -1,5 +1,12 @@
 <template>
-  <scroll ref="suggest" class="suggest" data="result" :pullup="pullup" @scrollToEnd="searchMore">
+  <scroll ref="suggest"
+          class="suggest"
+          data="result"
+          :pullup="pullup"
+          @scrollToEnd="searchMore"
+          :beforeScroll="beforeScroll"
+          @beforeScroll="listScroll"
+  >
     <ul class="suggest-list">
       <li @click="selectItem(item)" class="suggest-item" v-for="(item, index) in result" :key="index">
         <div class="icon">
@@ -20,7 +27,7 @@
 <script type="text/ecmascript-6">
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
-// import NoResult from 'base/no-result/no-result'
+import NoResult from 'base/no-result/no-result'
 import {search} from 'api/search'
 import {ERR_OK} from 'api/config'
 // import {createSong} from 'common/js/song'
@@ -36,7 +43,8 @@ export default {
       page: 1,
       result: [],
       pullup: true,
-      hasMore: true
+      hasMore: true,
+      beforeScroll: true
     }
   },
   props: {
@@ -96,7 +104,13 @@ export default {
         this.$router.push({
           path: `search/${singer.id}`
         })
+      } else {
+        this.insertSong(item)
       }
+      this.$meit('select')
+    },
+    listScroll() {
+      this.$emit('listScroll')
     },
     _checkMore(data) {
       const song = data.song
@@ -126,7 +140,10 @@ export default {
     },
     ...mapMutations({
       setSinger: 'SET_SINGER'
-    })
+    }),
+    ...mapActions([
+      'insertSort'
+    ])
   },
   watch: {
     query() {
@@ -134,7 +151,8 @@ export default {
     }
   },
   components: {
-    Scroll
+    Scroll,
+    NoResult
   }
 }
 </script>
