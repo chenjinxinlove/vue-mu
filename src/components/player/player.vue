@@ -106,7 +106,7 @@ import ProgressBar from 'base/progress-bar/progress-bar'
 import ProgressCircle from 'base/progress-circle/progress-circle'
 import {playMode} from 'common/js/config'
 import {prefixStyle} from 'common/js/dom'
-import shuffle from 'common/js/utils'
+import {shuffle} from 'common/js/utils'
 import LyricParser from 'lyric-parser'
 import Scroll from 'base/scroll/scroll'
 

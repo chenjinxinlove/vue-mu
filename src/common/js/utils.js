@@ -1,22 +1,27 @@
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
 
-export const shuffle = ([...arr]) => {
+export function shuffle(arr) {
   let _arr = arr.slice()
-  let m = _arr.length
-  while (m) {
-    const i = Math.floor(Math.random() * m--);
-    [_arr[m], _arr[i]] = [_arr[i], _arr[m]]
+  for (let i = 0; i < _arr.length; i++) {
+    let j = getRandomInt(0, i)
+    let t = _arr[i]
+    _arr[i] = _arr[j]
+    _arr[j] = t
   }
   return _arr
 }
 
 export function debounce(func, delay) {
-  let timer = ''
+  let timer
+
   return function (...args) {
     if (timer) {
       clearTimeout(timer)
     }
     timer = setTimeout(() => {
-      func.apply(this, ...args)
+      func.apply(this, args)
     }, delay)
   }
 }
