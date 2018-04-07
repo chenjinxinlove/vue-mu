@@ -35,7 +35,7 @@
         </div>
       </div>
       <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
-      <!-- <add-song ref="addSong"></add-song> -->
+      <add-song ref="addSong"></add-song>
     </div>
   </transition>
 </template>
@@ -125,7 +125,7 @@ export default {
   components: {
     Scroll,
     Confirm,
-    // AddSong
+    AddSong
   }
 }
 </script>
