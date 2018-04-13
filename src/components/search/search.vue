@@ -49,7 +49,8 @@ export default {
   mixins: [playlistMixin, searchMixin],
   data() {
     return {
-      hotKey: []
+      hotKey: [],
+      refreshDelay: 120
     }
   },
   computed: {
