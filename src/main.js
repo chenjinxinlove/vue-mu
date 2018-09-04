@@ -22,7 +22,10 @@ Vue.use(VueLazyLoad, {
 let app = new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  mounted() {
+    document.dispatchEvent(new Event('render-event'))
+  }
 })
 if (process.env.NODE_ENV === 'development') {
   app.$mount('#app')

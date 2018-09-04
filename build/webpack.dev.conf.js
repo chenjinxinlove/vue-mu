@@ -6,29 +6,40 @@ const webpack = require('webpack')
 const config = require('../config')
 const merge = require('webpack-merge')
 const path = require('path')
+const HappyPack = require('happypack')
+const happyThreadPool = HappyPack.ThreadPool({ size: 6 })
 const baseWebpackConfig = require('./webpack.base.conf')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
-
+// const { SkeletonPlugin } = require('page-skeleton-webpack-plugin')
 const portfinder = require('portfinder')
 
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
-const {version} = require('./../package.json');
+const { version } = require('./../package.json')
 
 function getDLLFileName() {
-    const fileNames = fs.readdirSync( path.resolve(__dirname, '../static/dll/'));
+  const fileNames = fs.readdirSync(path.resolve(__dirname, '../static/dll/'))
 
-    return _.find(fileNames, fileName => fileName.endsWith(`${version}.js`));
+  return _.find(fileNames, fileName => fileName.endsWith(`${version}.js`))
 }
-function resolve (dir) {
+function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
-    rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
+    rules: Object.assign(
+      utils.styleLoaders(
+        { sourceMap: config.dev.cssSourceMap, usePostCSS: true },
+        {
+          test: /\.js$/,
+          use: 'happypack/loader?id=js', // 指定loader
+          include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+        }
+      )
+    )
   },
   // cheap-module-eval-source-map is faster for development
   devtool: config.dev.devtool,
@@ -37,9 +48,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
   devServer: {
     clientLogLevel: 'warning',
     historyApiFallback: {
-      rewrites: [
-        { from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html') },
-      ],
+      rewrites: [{ from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html') }]
     },
     hot: true,
     contentBase: false, // since we use CopyWebpackPlugin.
@@ -47,21 +56,19 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     host: HOST || config.dev.host,
     port: PORT || config.dev.port,
     open: config.dev.autoOpenBrowser,
-    overlay: config.dev.errorOverlay
-      ? { warnings: false, errors: true }
-      : false,
+    overlay: config.dev.errorOverlay ? { warnings: false, errors: true } : false,
     publicPath: config.dev.assetsPublicPath,
     proxy: config.dev.proxyTable,
     quiet: true, // necessary for FriendlyErrorsPlugin
     watchOptions: {
-      poll: config.dev.poll,
+      poll: config.dev.poll
     }
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': require('../config/dev.env')
     }),
-    // new webpack.optimize.ModuleConcatenationPlugin({}),
+    new webpack.optimize.ModuleConcatenationPlugin({}),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
     new webpack.NoEmitOnErrorsPlugin(),
@@ -71,7 +78,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       // 在这里引入 manifest 文件
       manifest: require('../static/dll/vue.manifest.json')
     }),
-    //把js插入到html文件中
+    // 把js插入到html文件中
     new AddAssetHtmlPlugin({
       filepath: require.resolve(`../static/dll/${getDLLFileName()}`),
       outputPath: 'dll',
@@ -84,6 +91,24 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       template: 'index.html',
       inject: true
     }),
+    // new SkeletonPlugin({
+    //   pathname: path.resolve(__dirname, 'Skeleton.vue'), // the path to store shell file
+    //   staticDir: path.resolve(__dirname, './src'), // the same as the `output.path`
+    //   routes: ['/','/recommend'] // Which routes you want to generate skeleton screen
+    // }),
+    new HappyPack({
+      id: 'js',
+      threadPool: happyThreadPool,
+      loaders: [
+        {
+          path: 'babel-loader',
+          query: {
+            cacheDirectory: true
+          }
+        }
+      ]
+    }),
+    // copy custom static assets
     new CopyWebpackPlugin([
       {
         from: path.resolve(__dirname, '../static'),
@@ -106,14 +131,16 @@ module.exports = new Promise((resolve, reject) => {
       devWebpackConfig.devServer.port = port
 
       // Add FriendlyErrorsPlugin
-      devWebpackConfig.plugins.push(new FriendlyErrorsPlugin({
-        compilationSuccessInfo: {
-          messages: [`Your application is running here: http://${devWebpackConfig.devServer.host}:${port}`],
-        },
-        onErrors: config.dev.notifyOnErrors
-        ? utils.createNotifierCallback()
-        : undefined
-      }))
+      devWebpackConfig.plugins.push(
+        new FriendlyErrorsPlugin({
+          compilationSuccessInfo: {
+            messages: [
+              `Your application is running here: http://${devWebpackConfig.devServer.host}:${port}`
+            ]
+          },
+          onErrors: config.dev.notifyOnErrors ? utils.createNotifierCallback() : undefined
+        })
+      )
 
       resolve(devWebpackConfig)
     }

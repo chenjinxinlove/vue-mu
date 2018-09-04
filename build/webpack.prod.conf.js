@@ -12,6 +12,9 @@ const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const SkeletonWebpackPlugin = require('vue-skeleton-webpack-plugin')
 const OmmitCSSPlugin = require('./ommit-css-webpack-plugin')
+const PrerenderSPAPlugin = require('prerender-spa-plugin')
+const Renderer = PrerenderSPAPlugin.PuppeteerRenderer
+
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
@@ -136,7 +139,27 @@ const webpackConfig = merge(baseWebpackConfig, {
         to: config.build.assetsSubDirectory,
         ignore: ['.*']
       }
-    ])
+    ]),
+    new PrerenderSPAPlugin({
+      staticDir: config.build.assetsRoot,
+      outputDir: path.join(config.build.assetsRoot, 'dist'),
+      indexPath: config.build.index,
+      
+      // 对应路由文件的path
+      routes: [
+        '/',
+        '/recommend',
+        '/singer',
+        '/rank',
+        '/search',
+        '/user'
+      ],
+      
+      renderer: new Renderer({
+        headless: false,
+        renderAfterDocumentEvent: 'render-event'
+      })
+      })
   ]
 })
 
