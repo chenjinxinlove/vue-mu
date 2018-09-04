@@ -13,7 +13,12 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
+<<<<<<< HEAD
 // const { SkeletonPlugin } = require('page-skeleton-webpack-plugin')
+=======
+const { SkeletonPlugin } = require('page-skeleton-webpack-plugin')
+
+>>>>>>> 2c28649ccbbfda60190b34ce1bb529bf696eff38
 const portfinder = require('portfinder')
 
 const HOST = process.env.HOST
@@ -28,6 +33,50 @@ function getDLLFileName() {
 function resolve(dir) {
   return path.join(__dirname, '..', dir)
 }
+
+function customPath () {
+  return path.join(__dirname, 'shell.html')
+}
+const pluginDefaultConfig = {
+  text: {
+    color: '#EEEEEE'
+  },
+  image: {
+    shape: 'rect', // `rect` | `circle`
+    color: '#EFEFEF',
+    shapeOpposite: []
+  },
+  button: {
+    color: '#EFEFEF',
+    excludes: [] 
+  },
+  svg: {
+    color: '#EFEFEF',
+    shape: 'circle', // circle | rect
+    shapeOpposite: []
+  },
+  pseudo: {
+    color: '#EFEFEF', // or transparent
+    shape: 'circle' // circle | rect
+  },
+  device: 'iPhone 6 Plus',
+  debug: false,
+  minify: {
+    minifyCSS: { level: 2 },
+    removeComments: true,
+    removeAttributeQuotes: true,
+    removeEmptyAttributes: false
+  },
+  defer: 5000,
+  excludes: [],
+  remove: [],
+  hide: [],
+  grayBlock: [],
+  cookies: [],
+  headless: true,
+  h5Only: false
+}
+
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: Object.assign(
@@ -91,6 +140,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       template: 'index.html',
       inject: true
     }),
+<<<<<<< HEAD
     // new SkeletonPlugin({
     //   pathname: path.resolve(__dirname, 'Skeleton.vue'), // the path to store shell file
     //   staticDir: path.resolve(__dirname, './src'), // the same as the `output.path`
@@ -107,6 +157,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           }
         }
       ]
+=======
+
+    new HappyPack({
+      id: 'js',
+      threadPool: happyThreadPool,
+      loaders: [{
+          path: 'babel-loader',
+          query: {
+              cacheDirectory: true
+          }
+      }]
+    }),
+    new SkeletonPlugin({
+      pathname: path.resolve(__dirname, `${customPath}`) // 生成名为 shell 文件存放地址
+>>>>>>> 2c28649ccbbfda60190b34ce1bb529bf696eff38
     }),
     // copy custom static assets
     new CopyWebpackPlugin([

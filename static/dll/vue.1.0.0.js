@@ -58,7 +58,11 @@ var dll_vue =
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
+<<<<<<< HEAD
 /******/ 	__webpack_require__.p = "../static/dll/";
+=======
+/******/ 	__webpack_require__.p = "../dist/dll/";
+>>>>>>> skeleton
 /******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 9);
@@ -13745,7 +13749,11 @@ module.exports = function spread(callback) {
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /*!
+<<<<<<< HEAD
  * better-normal-scroll v1.9.1
+=======
+ * better-normal-scroll v1.9.0
+>>>>>>> skeleton
  * (c) 2016-2018 ustbhuangyi
  * Released under the MIT License.
  */
@@ -16103,7 +16111,10 @@ function pullDownMixin(BScroll) {
     var config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
     this.options.pullDownRefresh = config;
+<<<<<<< HEAD
     this._initPullDown();
+=======
+>>>>>>> skeleton
   };
 
   BScroll.prototype.closePullDown = function () {
@@ -16332,7 +16343,11 @@ pullDownMixin(BScroll);
 pullUpMixin(BScroll);
 mouseWheelMixin(BScroll);
 
+<<<<<<< HEAD
 BScroll.Version = '1.9.1';
+=======
+BScroll.Version = '1.9.0';
+>>>>>>> skeleton
 
 /* harmony default export */ __webpack_exports__["default"] = (BScroll);
 
